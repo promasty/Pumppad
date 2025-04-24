@@ -52,6 +52,19 @@
   </div>
 
   <script>
+  async function connectWallet() {
+  if (window.ethereum) {
+    try {
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      const wallet = accounts[0];
+      document.getElementById('walletAddress').innerText = "Connected: " + wallet;
+    } catch (err) {
+      console.error("User rejected wallet connection");
+    }
+  } else {
+    alert("MetaMask not detected. Please install it.");
+  }
+}
     function createToken() {
       const name = document.getElementById('tokenName').value;
       const symbol = document.getElementById('tokenSymbol').value;
