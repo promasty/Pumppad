@@ -18,26 +18,26 @@
     }
     .header {
       background-color: #00d46a;
-      padding: 12px;
+      padding: 10px;
       text-align: center;
-      font-size: 18px;
+      font-size: 16px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
     .container {
       max-width: 100%;
       width: 92%;
-      margin: 20px auto;
+      margin: 14px auto;
       background-color: #ffffff;
-      padding: 16px;
+      padding: 14px;
       border-radius: 14px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
     input, button {
       width: 100%;
-      padding: 10px;
-      margin: 8px 0;
+      padding: 8px;
+      margin: 6px 0;
       border-radius: 8px;
-      font-size: 13px;
+      font-size: 12px;
       font-family: inherit;
       border: 2px solid #00d46a;
       box-sizing: border-box;
@@ -51,28 +51,34 @@
     .wallet-options {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      margin-top: 18px;
+      gap: 6px;
+      margin-top: 14px;
     }
     .wallet-button {
       background-color: #000;
       color: #fff;
-      padding: 10px;
+      padding: 8px;
       border: none;
       border-radius: 10px;
-      font-size: 13px;
+      font-size: 12px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
     .wallet-button img {
-      height: 20px;
+      height: 18px;
+    }
+    .message {
+      margin-top: 10px;
+      font-size: 11px;
+      color: red;
+      display: none;
     }
     @media screen and (min-width: 600px) {
-      .header { font-size: 24px; }
-      input, button { font-size: 15px; }
-      .wallet-button { font-size: 15px; }
+      .header { font-size: 22px; }
+      input, button { font-size: 14px; }
+      .wallet-button { font-size: 14px; }
     }
   </style>
 </head>
@@ -81,7 +87,7 @@
   <div class="header">PEPACTUM Pumppad</div>
 
   <div class="container">
-    <h2 style="font-size:16px;">Create Your Meme Token</h2>
+    <h2 style="font-size:14px;">Create Your Meme Token</h2>
     <input type="text" placeholder="Token Name" />
     <input type="text" placeholder="Token Symbol (e.g. PEPU)" />
     <input type="text" placeholder="Website URL" />
@@ -89,7 +95,7 @@
     <input type="text" placeholder="X (Twitter) Link" />
     <button>Create Token</button>
 
-    <h3 style="margin-top: 20px; font-size:14px;">Connect Wallet</h3>
+    <h3 style="margin-top: 18px; font-size:13px;">Connect Wallet</h3>
     <div class="wallet-options">
       <button class="wallet-button" onclick="connectWallet()">
         WalletConnect
@@ -105,7 +111,10 @@
       </button>
     </div>
 
-    <p id="walletAddress" style="font-size: 12px; margin-top: 8px;"></p>
+    <p id="walletAddress" style="font-size: 11px; margin-top: 6px;"></p>
+    <div class="message" id="message">
+      Wallet connection may not be supported in this browser. Please open in your wallet's browser.
+    </div>
   </div>
 
   <script>
@@ -114,6 +123,7 @@
     let selectedAccount;
 
     async function init() {
+      const isChromeMobile = /CriOS/i.test(navigator.userAgent);
       const providerOptions = {
         walletconnect: {
           package: window.WalletConnectProvider.default,
@@ -122,7 +132,7 @@
               3409: "https://rpc-pepe-unchained-gupg0lo9wf.t.conduit.xyz"
             },
             chainId: 3409,
-            qrcode: false // to trigger mobile redirect
+            qrcode: false
           }
         }
       };
@@ -132,6 +142,10 @@
         providerOptions,
         theme: "dark"
       });
+
+      if (isChromeMobile) {
+        document.getElementById("message").style.display = "block";
+      }
     }
 
     async function connectWallet() {
