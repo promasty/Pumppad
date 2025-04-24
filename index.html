@@ -30,12 +30,17 @@
     }
     button {
       cursor: pointer;
+      background-color: #008000;
+      border: none;
+      color: white;
+      font-weight: bold;
     }
   </style>
-  <!-- Web3Modal JS -->
+
+  <!-- Web3Modal & Web3 -->
+  <script src="https://unpkg.com/web3@1.8.2/dist/web3.min.js"></script>
   <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
-  <script src="https://unpkg.com/web3modal"></script>
-  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+  <script src="https://unpkg.com/web3modal@1.9.12/dist/index.js"></script>
 </head>
 <body>
   <div class="container">
@@ -70,23 +75,29 @@
             rpc: {
               3409: "https://rpc-pepe-unchained-gupg0lo9wf.t.conduit.xyz"
             },
-            chainId: 3409
+            chainId: 3409,
+            qrcode: false // NO QR CODE
           }
         }
       };
 
       web3Modal = new window.Web3Modal.default({
         cacheProvider: false,
-        providerOptions
+        providerOptions,
+        disableInjectedProvider: false
       });
     }
 
     async function connectWallet() {
-      provider = await web3Modal.connect();
-      const web3 = new Web3(provider);
-      const accounts = await web3.eth.getAccounts();
-      selectedAccount = accounts[0];
-      document.getElementById("walletAddress").innerText = "Connected: " + selectedAccount;
+      try {
+        provider = await web3Modal.connect();
+        const web3 = new Web3(provider);
+        const accounts = await web3.eth.getAccounts();
+        selectedAccount = accounts[0];
+        document.getElementById("walletAddress").innerText = "Connected: " + selectedAccount;
+      } catch (error) {
+        console.error("Wallet connection failed:", error);
+      }
     }
 
     function createToken() {
