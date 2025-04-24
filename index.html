@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PEPACTUM Pumppad</title>
   <link href="https://fonts.googleapis.com/css2?family=Rubik+Mono+One&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/web3@1.8.2/dist/web3.min.js"></script>
+  <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+  <script src="https://unpkg.com/web3modal@1.9.12/dist/index.js"></script>
+
   <style>
     body {
       margin: 0;
@@ -14,26 +18,26 @@
     }
     .header {
       background-color: #00d46a;
-      padding: 16px;
+      padding: 12px;
       text-align: center;
-      font-size: 20px;
+      font-size: 18px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
     .container {
       max-width: 100%;
-      width: 95%;
+      width: 92%;
       margin: 20px auto;
       background-color: #ffffff;
-      padding: 20px;
-      border-radius: 20px;
+      padding: 16px;
+      border-radius: 14px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
     input, button {
       width: 100%;
-      padding: 12px;
-      margin: 10px 0;
-      border-radius: 10px;
-      font-size: 14px;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 8px;
+      font-size: 13px;
       font-family: inherit;
       border: 2px solid #00d46a;
       box-sizing: border-box;
@@ -47,49 +51,37 @@
     .wallet-options {
       display: flex;
       flex-direction: column;
-      gap: 10px;
-      margin-top: 20px;
+      gap: 8px;
+      margin-top: 18px;
     }
     .wallet-button {
       background-color: #000;
       color: #fff;
-      padding: 12px;
+      padding: 10px;
       border: none;
-      border-radius: 12px;
-      font-size: 14px;
+      border-radius: 10px;
+      font-size: 13px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
     .wallet-button img {
-      height: 22px;
+      height: 20px;
     }
     @media screen and (min-width: 600px) {
-      .header {
-        font-size: 28px;
-      }
-      input, button {
-        font-size: 16px;
-      }
-      .wallet-button {
-        font-size: 16px;
-        padding: 14px;
-      }
-      .wallet-button img {
-        height: 26px;
-      }
+      .header { font-size: 24px; }
+      input, button { font-size: 15px; }
+      .wallet-button { font-size: 15px; }
     }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    PEPACTUM Pumppad
-  </div>
+  <div class="header">PEPACTUM Pumppad</div>
 
   <div class="container">
-    <h2 style="font-size:18px;">Create Your Meme Token</h2>
+    <h2 style="font-size:16px;">Create Your Meme Token</h2>
     <input type="text" placeholder="Token Name" />
     <input type="text" placeholder="Token Symbol (e.g. PEPU)" />
     <input type="text" placeholder="Website URL" />
@@ -97,22 +89,64 @@
     <input type="text" placeholder="X (Twitter) Link" />
     <button>Create Token</button>
 
-    <h3 style="margin-top: 30px; font-size:16px;">Connect Wallet</h3>
+    <h3 style="margin-top: 20px; font-size:14px;">Connect Wallet</h3>
     <div class="wallet-options">
-      <button class="wallet-button">
-        Connect Wallet
+      <button class="wallet-button" onclick="connectWallet()">
+        WalletConnect
         <img src="https://walletconnect.com/_next/static/media/logo_mark.ef6ceec7.svg" alt="walletconnect" />
       </button>
-      <button class="wallet-button">
+      <button class="wallet-button" onclick="connectWallet()">
         Best Wallet
         <img src="https://cdn.icon-icons.com/icons2/3914/PNG/512/best_wallet_logo_icon_249634.png" alt="bestwallet" />
       </button>
-      <button class="wallet-button">
+      <button class="wallet-button" onclick="connectWallet()">
         Coinbase Wallet
         <img src="https://www.coinbase.com/assets/app-icon-6f1c206e3e54f47e088a25cf73fc4a2b7a02a1f1484a0b2e11b7f328eeb9e177.png" alt="coinbase" />
       </button>
     </div>
+
+    <p id="walletAddress" style="font-size: 12px; margin-top: 8px;"></p>
   </div>
 
+  <script>
+    let web3Modal;
+    let provider;
+    let selectedAccount;
+
+    async function init() {
+      const providerOptions = {
+        walletconnect: {
+          package: window.WalletConnectProvider.default,
+          options: {
+            rpc: {
+              3409: "https://rpc-pepe-unchained-gupg0lo9wf.t.conduit.xyz"
+            },
+            chainId: 3409,
+            qrcode: false // to trigger mobile redirect
+          }
+        }
+      };
+
+      web3Modal = new window.Web3Modal.default({
+        cacheProvider: false,
+        providerOptions,
+        theme: "dark"
+      });
+    }
+
+    async function connectWallet() {
+      try {
+        provider = await web3Modal.connect();
+        const web3 = new Web3(provider);
+        const accounts = await web3.eth.getAccounts();
+        selectedAccount = accounts[0];
+        document.getElementById("walletAddress").innerText = "Connected: " + selectedAccount;
+      } catch (error) {
+        console.error("Wallet connection error:", error);
+      }
+    }
+
+    window.addEventListener('load', init);
+  </script>
 </body>
 </html>
