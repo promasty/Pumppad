@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PEPACTUM Pumppad on Pepe Unchained</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #0f0f0f;
+      color: #ffffff;
+      padding: 30px;
+    }
+    input, button {
+      padding: 10px;
+      margin: 10px 0;
+      width: 100%;
+      font-size: 16px;
+    }
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    .token-box {
+      margin-top: 30px;
+      padding: 20px;
+      background-color: #1e1e1e;
+      border: 1px solid #444;
+      border-radius: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>PEPACTUM Pumppad</h1>
+    <p>Create your token on the Pepe Unchained network</p>
+
+    <input type="text" id="tokenName" placeholder="Token Name" />
+    <input type="text" id="tokenSymbol" placeholder="Token Symbol (e.g., PEPO)" />
+    <input type="text" id="website" placeholder="Website URL" />
+    <input type="text" id="telegram" placeholder="Telegram Link" />
+    <input type="text" id="xTwitter" placeholder="X (Twitter) Link" />
+
+    <button onclick="createToken()">Create Token</button>
+
+    <div id="output" class="token-box" style="display:none;">
+      <h3>Token created successfully!</h3>
+      <p id="tokenInfo"></p>
+    </div>
+  </div>
+
+  <script>
+    function createToken() {
+      const name = document.getElementById('tokenName').value;
+      const symbol = document.getElementById('tokenSymbol').value;
+      const website = document.getElementById('website').value;
+      const telegram = document.getElementById('telegram').value;
+      const x = document.getElementById('xTwitter').value;
+
+      const info = `Name: ${name}<br>Symbol: ${symbol}<br>Website: ${website}<br>Telegram: ${telegram}<br>X: ${x}`;
+      document.getElementById('tokenInfo').innerHTML = info;
+      document.getElementById('output').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
