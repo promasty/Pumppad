@@ -63,17 +63,17 @@
     let selectedAccount;
 
     async function init() {
-     const providerOptions = {
-  walletconnect: {
-    package: window.WalletConnectProvider.default,
-    options: {
-      rpc: {
-        3409: "https://rpc-pepe-unchained-gupg0lo9wf.t.conduit.xyz"
-      },
-      chainId: 3409
-    }
-  }
-};
+      const providerOptions = {
+        walletconnect: {
+          package: window.WalletConnectProvider.default,
+          options: {
+            rpc: {
+              3409: "https://rpc-pepe-unchained-gupg0lo9wf.t.conduit.xyz"
+            },
+            chainId: 3409
+          }
+        }
+      };
 
       web3Modal = new window.Web3Modal.default({
         cacheProvider: false,
