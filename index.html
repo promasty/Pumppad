@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PEPACTUM Pumppad on Pepe Unchained</title>
+  <title>PEPACTUM Pumppad</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -28,14 +28,20 @@
       border: 1px solid #444;
       border-radius: 8px;
     }
+    button {
+      cursor: pointer;
+    }
   </style>
+  <!-- Web3Modal JS -->
+  <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+  <script src="https://unpkg.com/web3modal"></script>
+  <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
 </head>
 <body>
   <div class="container">
     <h1>PEPACTUM Pumppad</h1>
     <button onclick="connectWallet()">Connect Wallet</button>
-<p id="walletAddress" style="font-size:14px; margin-top:10px;"></p>
-    <p>Create your token on the Pepe Unchained network</p>
+    <p id="walletAddress" style="font-size:14px; margin-top:10px;"></p>
 
     <input type="text" id="tokenName" placeholder="Token Name" />
     <input type="text" id="tokenSymbol" placeholder="Token Symbol (e.g., PEPO)" />
@@ -52,19 +58,37 @@
   </div>
 
   <script>
-  async function connectWallet() {
-  if (window.ethereum) {
-    try {
-      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-      const wallet = accounts[0];
-      document.getElementById('walletAddress').innerText = "Connected: " + wallet;
-    } catch (err) {
-      console.error("User rejected wallet connection");
+    let web3Modal;
+    let provider;
+    let selectedAccount;
+
+    async function init() {
+     const providerOptions = {
+  walletconnect: {
+    package: window.WalletConnectProvider.default,
+    options: {
+      rpc: {
+        3409: "https://rpc-pepe-unchained-gupg0lo9wf.t.conduit.xyz"
+      },
+      chainId: 3409
     }
-  } else {
-    alert("MetaMask not detected. Please install it.");
   }
-}
+};
+
+      web3Modal = new window.Web3Modal.default({
+        cacheProvider: false,
+        providerOptions
+      });
+    }
+
+    async function connectWallet() {
+      provider = await web3Modal.connect();
+      const web3 = new Web3(provider);
+      const accounts = await web3.eth.getAccounts();
+      selectedAccount = accounts[0];
+      document.getElementById("walletAddress").innerText = "Connected: " + selectedAccount;
+    }
+
     function createToken() {
       const name = document.getElementById('tokenName').value;
       const symbol = document.getElementById('tokenSymbol').value;
@@ -76,6 +100,8 @@
       document.getElementById('tokenInfo').innerHTML = info;
       document.getElementById('output').style.display = 'block';
     }
+
+    window.addEventListener('load', init);
   </script>
 </body>
 </html>
