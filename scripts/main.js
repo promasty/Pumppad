@@ -1,5 +1,5 @@
-// ---- 1. Připojení peněženky přes Web3Modal ----
-const projectId = '8c7e383e54a9de41aec00f6ef1a1e286'; // Tvůj WalletConnect ID
+// WalletConnect & Pepe Unchained config
+const projectId = '8c7e383e54a9de41aec00f6ef1a1e286';
 const pepeChain = {
   chainId: 3409,
   name: 'Pepe Unchained',
@@ -23,19 +23,23 @@ const modal = window.web3modal.createWalletConnectModal({
   ]
 });
 
+// Připojení peněženky
 document.getElementById('connectWallet').addEventListener('click', async () => {
   try {
     const session = await modal.connect();
     provider = new ethers.BrowserProvider(session);
     signer = await provider.getSigner();
     walletAddress = await signer.getAddress();
-    document.getElementById('connectWallet').innerText = `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
-  } catch (e) {
-    console.error('Wallet connection failed:', e);
+
+    document.getElementById('connectWallet').innerText =
+      `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
+  } catch (err) {
+    console.error('Wallet connection error:', err);
+    alert('Failed to connect wallet.');
   }
 });
 
-// ---- 2. Zobrazení sekcí ----
+// Přepínání sekcí
 document.addEventListener('DOMContentLoaded', () => {
   const sections = document.querySelectorAll('.section');
 
@@ -46,35 +50,42 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   showSection('dashboard');
-  loadTokens(); // Načti tokeny při načtení
+  loadTokens();
 });
 
-// ---- 3. Načtení tokenů z PepuScan API ----
+// Načtení tokenů z pepuscan API
 async function loadTokens() {
+  const presaleEl = document.getElementById('presale');
+  const bondedEl = document.getElementById('bonded');
+
+  presaleEl.innerHTML = 'Loading...';
+  bondedEl.innerHTML = 'Loading...';
+
   try {
     const res = await fetch('https://pepuscan.com/api/tokens');
     const data = await res.json();
-
-    const presaleEl = document.getElementById('presale');
-    const bondedEl = document.getElementById('bonded');
 
     presaleEl.innerHTML = '';
     bondedEl.innerHTML = '';
 
     data.tokens.forEach(token => {
-      const card = `
-        <div style="margin-bottom: 1rem; padding: 1rem; background:#222; border-radius:8px;">
-          <strong>${token.name}</strong> (${token.symbol})<br/>
-          Holders: ${token.holders} | Marketcap: ${token.marketcap}<br/>
-        </div>
+      const el = document.createElement('div');
+      el.classList.add('token-card');
+      el.innerHTML = `
+        <strong>${token.name}</strong> (${token.symbol})<br/>
+        Holders: ${token.holders}<br/>
+        Marketcap: ${token.marketcap}
       `;
+
       if (token.bonded) {
-        bondedEl.innerHTML += card;
+        bondedEl.appendChild(el);
       } else {
-        presaleEl.innerHTML += card;
+        presaleEl.appendChild(el);
       }
     });
   } catch (err) {
-    console.error('Token loading failed:', err);
+    console.error('Token load error:', err);
+    presaleEl.innerText = 'Failed to load tokens.';
+    bondedEl.innerText = 'Failed to load tokens.';
   }
 }
