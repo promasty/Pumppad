@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="cs">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PEPACTUM Pumppad</title>
 
-  <!-- Styles -->
+  <!-- Stylování -->
   <style>
     body {
       margin: 0;
@@ -30,11 +30,12 @@
       color: #ffffff;
       text-decoration: none;
       margin: 0 1rem;
+      transition: color 0.2s;
     }
     nav a:hover {
       color: #2ecc71;
     }
-    #connectWallet {
+    button#connectWallet {
       background-color: #2ecc71;
       color: #000;
       border: none;
@@ -48,6 +49,9 @@
     }
     .section {
       display: none;
+    }
+    .section.active {
+      display: block;
     }
     .token-card {
       background: #1e1e1e;
@@ -65,7 +69,7 @@
     }
   </style>
 
-  <!-- Libraries -->
+  <!-- Knihovny -->
   <script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.umd.min.js"></script>
   <script src="https://unpkg.com/@web3modal/standalone@2.10.6/dist/index.js"></script>
 </head>
@@ -81,9 +85,9 @@
   </header>
 
   <main>
-    <section id="dashboard" class="section">Welcome to the PEPACTUM Dashboard</section>
-    <section id="presale" class="section">Presale Tokens Loading...</section>
-    <section id="bonded" class="section">Bonded Tokens Loading...</section>
+    <section id="dashboard" class="section active">Vítejte na PEPACTUM Dashboardu</section>
+    <section id="presale" class="section">Načítání Presale tokenů...</section>
+    <section id="bonded" class="section">Načítání Bonded tokenů...</section>
   </main>
 
   <footer>
@@ -91,6 +95,7 @@
   </footer>
 
   <script>
+    // Konfigurace WalletConnect a sítě Pepe Unchained
     const projectId = '8c7e383e54a9de41aec00f6ef1a1e286';
     const pepeChain = {
       chainId: 3409,
@@ -107,6 +112,7 @@
       chains: [pepeChain],
     });
 
+    // Připojení peněženky
     document.getElementById('connectWallet').addEventListener('click', async () => {
       try {
         const session = await modal.connect();
@@ -114,17 +120,19 @@
         signer = await provider.getSigner();
         walletAddress = await signer.getAddress();
         document.getElementById('connectWallet').innerText =
-          `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
+          `Připojeno: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
       } catch (err) {
-        alert('Wallet connect failed.');
+        alert('Nepodařilo se připojit peněženku.');
         console.error(err);
       }
     });
 
+    // Přepínání sekcí
     function showSection(id) {
       document.querySelectorAll('.section').forEach(s => {
-        s.style.display = s.id === id ? 'block' : 'none';
+        s.classList.remove('active');
       });
+      document.getElementById(id).classList.add('active');
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -132,11 +140,12 @@
       loadTokens();
     });
 
+    // Načítání tokenů z API
     async function loadTokens() {
       const presaleEl = document.getElementById('presale');
       const bondedEl = document.getElementById('bonded');
-      presaleEl.innerHTML = 'Loading...';
-      bondedEl.innerHTML = 'Loading...';
+      presaleEl.innerHTML = 'Načítání...';
+      bondedEl.innerHTML = 'Načítání...';
 
       try {
         const res = await fetch('https://pepuscan.com/api/tokens');
@@ -148,12 +157,12 @@
         data.tokens.forEach(token => {
           const el = document.createElement('div');
           el.className = 'token-card';
-          el.innerHTML = `<strong>${token.name}</strong> (${token.symbol})<br/>Holders: ${token.holders}<br/>Marketcap: ${token.marketcap}`;
+          el.innerHTML = `<strong>${token.name}</strong> (${token.symbol})<br/>Držitelé: ${token.holders}<br/>Tržní kapitalizace: ${token.marketcap}`;
           if (token.bonded) bondedEl.appendChild(el);
           else presaleEl.appendChild(el);
         });
       } catch (err) {
-        presaleEl.innerText = bondedEl.innerText = 'Failed to load tokens.';
+        presaleEl.innerText = bondedEl.innerText = 'Nepodařilo se načíst tokeny.';
         console.error(err);
       }
     }
