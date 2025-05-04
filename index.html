@@ -6,14 +6,68 @@
   <title>PEPACTUM Pumppad</title>
 
   <!-- Styles -->
-  <link rel="stylesheet" href="styles/style.css" />
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0d0d0d;
+      color: #ffffff;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #1a1a1a;
+      padding: 1rem 2rem;
+      border-bottom: 2px solid #2ecc71;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
+      color: #2ecc71;
+    }
+    nav a {
+      color: #ffffff;
+      text-decoration: none;
+      margin: 0 1rem;
+    }
+    nav a:hover {
+      color: #2ecc71;
+    }
+    #connectWallet {
+      background-color: #2ecc71;
+      color: #000;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    main {
+      padding: 2rem;
+    }
+    .section {
+      display: none;
+    }
+    .token-card {
+      background: #1e1e1e;
+      border: 1px solid #2ecc71;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 6px;
+    }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background-color: #1a1a1a;
+      border-top: 1px solid #333;
+      color: #aaa;
+    }
+  </style>
 
   <!-- Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.umd.min.js"></script>
   <script src="https://unpkg.com/@web3modal/standalone@2.10.6/dist/index.js"></script>
-
-  <!-- JS -->
-  <script defer src="scripts/main.js"></script>
 </head>
 <body>
   <header>
@@ -22,20 +76,87 @@
       <a href="#" onclick="showSection('dashboard')">Dashboard</a>
       <a href="#" onclick="showSection('presale')">Presale</a>
       <a href="#" onclick="showSection('bonded')">Bonded</a>
-      <a href="#" onclick="showSection('portfolio')">Portfolio</a>
     </nav>
     <button id="connectWallet">Connect Wallet</button>
   </header>
 
   <main>
     <section id="dashboard" class="section">Welcome to the PEPACTUM Dashboard</section>
-    <section id="presale" class="section" style="display:none;">Presale Tokens Loading...</section>
-    <section id="bonded" class="section" style="display:none;">Bonded Tokens Loading...</section>
-    <section id="portfolio" class="section" style="display:none;">Your Portfolio will appear here.</section>
+    <section id="presale" class="section">Presale Tokens Loading...</section>
+    <section id="bonded" class="section">Bonded Tokens Loading...</section>
   </main>
 
   <footer>
     <p>&copy; 2025 PEPACTUM</p>
   </footer>
+
+  <script>
+    const projectId = '8c7e383e54a9de41aec00f6ef1a1e286';
+    const pepeChain = {
+      chainId: 3409,
+      name: 'Pepe Unchained',
+      rpcUrl: 'https://rpc-pepe-unchained-gupg0lo9wf.t.conduit.xyz',
+    };
+
+    let provider;
+    let signer;
+    let walletAddress = '';
+
+    const modal = window.web3modal.createWalletConnectModal({
+      projectId,
+      chains: [pepeChain],
+    });
+
+    document.getElementById('connectWallet').addEventListener('click', async () => {
+      try {
+        const session = await modal.connect();
+        provider = new ethers.BrowserProvider(session);
+        signer = await provider.getSigner();
+        walletAddress = await signer.getAddress();
+        document.getElementById('connectWallet').innerText =
+          `Connected: ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`;
+      } catch (err) {
+        alert('Wallet connect failed.');
+        console.error(err);
+      }
+    });
+
+    function showSection(id) {
+      document.querySelectorAll('.section').forEach(s => {
+        s.style.display = s.id === id ? 'block' : 'none';
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      showSection('dashboard');
+      loadTokens();
+    });
+
+    async function loadTokens() {
+      const presaleEl = document.getElementById('presale');
+      const bondedEl = document.getElementById('bonded');
+      presaleEl.innerHTML = 'Loading...';
+      bondedEl.innerHTML = 'Loading...';
+
+      try {
+        const res = await fetch('https://pepuscan.com/api/tokens');
+        const data = await res.json();
+
+        presaleEl.innerHTML = '';
+        bondedEl.innerHTML = '';
+
+        data.tokens.forEach(token => {
+          const el = document.createElement('div');
+          el.className = 'token-card';
+          el.innerHTML = `<strong>${token.name}</strong> (${token.symbol})<br/>Holders: ${token.holders}<br/>Marketcap: ${token.marketcap}`;
+          if (token.bonded) bondedEl.appendChild(el);
+          else presaleEl.appendChild(el);
+        });
+      } catch (err) {
+        presaleEl.innerText = bondedEl.innerText = 'Failed to load tokens.';
+        console.error(err);
+      }
+    }
+  </script>
 </body>
 </html>
