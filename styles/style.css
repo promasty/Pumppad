@@ -60,3 +60,11 @@ footer {
   border-top: 1px solid #333;
   color: #aaa;
 }
+
+.token-card {
+  background: #1e1e1e;
+  border: 1px solid #2ecc71;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+}
