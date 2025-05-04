@@ -4,11 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>PEPACTUM Pumppad</title>
+
+  <!-- Styles -->
   <link rel="stylesheet" href="styles/style.css" />
+
+  <!-- Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.umd.min.js"></script>
+  <script src="https://unpkg.com/@web3modal/standalone@2.10.6/dist/index.js"></script>
+
+  <!-- JS -->
   <script defer src="scripts/main.js"></script>
 </head>
-<script src="https://cdn.jsdelivr.net/npm/ethers@6.7.0/dist/ethers.umd.min.js"></script>
-<script src="https://unpkg.com/@web3modal/standalone@2.10.6/dist/index.js"></script>
 <body>
   <header>
     <h1>PEPACTUM</h1>
@@ -20,12 +26,14 @@
     </nav>
     <button id="connectWallet">Connect Wallet</button>
   </header>
+
   <main>
     <section id="dashboard" class="section">Welcome to the PEPACTUM Dashboard</section>
     <section id="presale" class="section" style="display:none;">Presale Tokens Loading...</section>
     <section id="bonded" class="section" style="display:none;">Bonded Tokens Loading...</section>
     <section id="portfolio" class="section" style="display:none;">Your Portfolio will appear here.</section>
   </main>
+
   <footer>
     <p>&copy; 2025 PEPACTUM</p>
   </footer>
